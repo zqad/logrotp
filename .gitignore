@@ -1,0 +1,5 @@
+logrotp
+*.o
+core
+.*.swp
+*~

@@ -1,0 +1,5 @@
+- More test cases
+  - A log that is impossible to break in two
+  - Awkward end-of-files while logrotp is searching for a \n
+- Compression support
+- shred-type log erasing

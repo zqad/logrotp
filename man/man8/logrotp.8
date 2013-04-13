@@ -1,0 +1,109 @@
+.TH LOGROTP 8 "Sun Apr 14 2013" "Logrotp" "System Administrator's Manual"
+
+.SH NAME
+logrotp \(hy rotates logs by means of streaming to a pipe
+
+.SH SYNOPSIS
+\fBlogrotp\fR [ \fB\-h\fR|\fB\-\-help\fR ]
+
+\fBlogrotp\fR [ \fB\-D\fR|\fB\-\-debug\fR ] [ \fB\-d\fR|\fB\-\-direct\fR ]
+[ \fB\-s\fR|\fB\-\-size\fR \fImaximum size\fR ]
+[ \fB\-k\fR|\fB\-\-keep\fR \fInumber of logs to keep\fR ]
+[ \fB\-t\fR|\fB\-\-tolerance\fR \fItolerance\fR ]
+[ \fB\-m\fR|\fB\-\-mode\fR \fIfile mode\fR ]
+[ \fB\-C\fR|\fB\-\-post_rotate_cmd\fR \fIcommand\fR ]
+[ \fB\-U\fR|\fB\-\-post_rotate_user\fR \fIuser name\fR ]
+[ \fB\-B\fR|\fB\-\-post_rotate_block\fR ]
+\fIlog file name\fR
+
+.SH DESCRIPTION
+\fBlogrotp\fR is doing the same job as the \fBlogrotate\fR(8) command. However,
+instead of beeing run as a cron job, \fBlogrotp\fR is always active and
+responsible for writing logs to disk. The main difference between
+\fBlogrotate\fR(8) and \fBlogrotp\fR is that \fBlogrotp\fR always watches the
+size of the resulting log, making it impossible for the log to grow to big.
+.P
+To be able to keep the log some what consistent, \fBlogrotp\fR employes a
+\fItolerance\fR. When the log is close to its maximum size, with "close" beeing
+defined by the set \fItolerance\fR, \fBlogrotp\fR starts to search for a newline
+character (\fI\\n\fR), and tries to rotate when it has come across one. If no
+newline is found in when the log is in the size range of [ \fImaximum size\fR \-
+\fItolerance\fR ; \fImaximum size\fR + \fItolerance\fR ], it will rotate the log
+anyway.
+.P
+\fBNOTE\fR that this means that \fBlogrotp\fR is mainly meant for textual and
+not binary logs.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display the built-in help.
+
+.TP
+\fB\-D\fR, \fB\-\-debug\fR
+Turn on debug printouts.
+
+.TP
+\fB\-d\fR, \fB\-\-direct\fR
+Set the flag O_DIRECT when opening files. This will tell the kernel to try and
+write synchronous, which will impair writing performance.
+
+.TP
+\fB\-s\fR, \fB\-\-size\fR \fImaximum size\fR
+Set the maximum allowed size for logs. Actual size will vary with tolerance. See
+the chapter \fBSIZES\fR for information on how sizes can be written.
+
+.TP
+\fB\-k\fR, \fB\-\-keep\fR \fInumber of logs to keep\fR
+Set the maximum number of logs to keep. For example: If the log file name is
+\fBlog\fR and keep is \fB2\fR, there will three logs in the system; \fBlog\fR,
+\fBlog.1\fR and \fBlog.2\fR.
+
+.TP
+\fB\-t\fR, \fB\-\-tolerance\fR \fItolerance\fR
+Set the tolerance in which \fBlogrotp\fR should look for a new line character,
+with \fItolerance\fR is expressed as a size. See the chapter \fBSIZES\fR for
+information on how sizes can be written.
+
+.TP
+\fB\-m\fR, \fB\-\-mode\fR \fImode\fR
+Set the default mode of newly created files. Note that the final mode is
+\fI(mode & ~umask)\fR.
+
+.TP
+\fB\-C\fR, \fB\-\-post_rotate_cmd\fR \fIcommand\fR
+If supplied, \fIcommand\fR will be run after a successful log rotation.
+
+.TP
+\fB\-U\fR, \fB\-\-post_rotate_user\fR \fIuser name\fR
+If supplied, the post rotate command will be run as \fIuser name\fR.
+
+.TP
+\fB\-B\fR, \fB\-\-post_rotate_block\fR
+Make \fBlogrotp\fR hold off creating a new file untilthe post rotate command has
+exited.
+
+.SH SIZES
+The \fImaximum file size\fR and \fItolerance\fR can be expressed as a size,
+which is either a numeric value specifying a amount of bytes, or a numeric value
+with a suffix specifying that the value is in e.g. \fBKiB\fR. Allowed suffixes
+are [\fBkKmMgG\fR]
+
+.TP
+\fBk\fR and \fBK\fR
+Value is in KiB (1024 bytes).
+
+.TP
+\fBm\fR and \fBM\fR
+Value is in MiB (1048576 bytes).
+
+.TP
+\fBg\fR and \fBG\fR
+Value is in GiB (1073741824 bytes).
+
+.SH SEE ALSO
+.BR logrotate (8)
+
+.SH AUTHOR
+Jonas Eriksson <zqad@acc.umu.se>
+.fi
+.\" vim:et:ts=2:sw=2:tw=80:

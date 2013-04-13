@@ -1,0 +1,64 @@
+#!/bin/bash
+
+print_row() {
+  declare row_len=$1
+  declare i
+
+  for (( i = 0; i < (row_len - 1) ; i++ )); do
+    echo -n $(( $i % 10 ))
+  done
+  echo
+}
+
+print_rows() {
+  declare row_len=$1
+  declare nrows=$2
+  declare i
+
+  for (( i = 0; i < nrows ; i++ )); do
+    print_row $row_len
+  done
+}
+
+fail() {
+  declare reason=$@
+
+  if [ -n "$reason" ]; then
+    echo "$0 failed: $reason"
+  else
+    echo "$0 failed"
+  fi
+  exit 1
+}
+
+begin() {
+  declare desc=$@
+
+  echo "========================"
+  if [ -n "$desc" ]; then
+    echo "$0: $desc"
+  else
+    echo "$0: [No description]"
+  fi
+  echo "------------------------"
+}
+
+end() {
+  echo "------------------------"
+  echo "$0 succeeded"
+  echo "========================"
+  echo
+  exit 0
+}
+
+file_size() {
+  stat -c '%s' "$1"
+}
+
+LOGROTP="$(readlink -f ../logrotp)"
+
+test -x "$LOGROTP" || fail "Unable to find logrotp"
+
+if [ -n "$LOGROTP_TEST_DEBUG" ]; then
+  LOGROTP="$LOGROTP -D"
+fi
