@@ -438,7 +438,7 @@ static int run_postrot_cmd() {
 }
 
 static ssize_t write_all(int fd, void *buf, size_t count, ssize_t *written) {
-	size_t w;
+	ssize_t w;
 
 	*written = 0;
 	do {
